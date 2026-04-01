@@ -27,16 +27,16 @@ public class User {
     private Long id;
 
     @Email
-    @NotEmpty(message = "user email should not be empty")
+    @NotEmpty(message = "Email should not be empty")
     @Column(unique = true)
     private String email;
 
-    @NotEmpty(message = "user name should not be empty")
+    @NotEmpty(message = "Username should not be empty")
     private String name;
 
 
-    @NotEmpty(message = "user password should not be empty")
-    @Length(min = 8, message = "password less than 8 digits long")
+    @NotEmpty(message = "Password should not be empty")
+    @Length(min = 8, message = "Password less than 8 digits long")
     private String password;
 
 

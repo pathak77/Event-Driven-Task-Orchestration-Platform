@@ -34,7 +34,7 @@ public class Task {
 
     @NotEmpty(message = "Task description cannot be empty")
     @Column(length = 1200)
-    @Size(max = 1200, message = "{task.description.size}")
+    @Size(max = 1200, message = "1000")
     private String description;
 
     @NotNull(message = "Date cant be null")
@@ -46,7 +46,7 @@ public class Task {
     private String creatorName;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "OWNER_ID")
     private User owner;
 
