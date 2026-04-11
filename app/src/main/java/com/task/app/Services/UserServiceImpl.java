@@ -17,10 +17,9 @@ public class UserServiceImpl implements UserService {
     private static final String ADMIN = "ADMIN";
     private static final String USER = "USER";
 
-    private UserRepo userRepository;
-    private TaskRepo taskRepository;
-    private RoleRepo roleRepository;
-
+    private final UserRepo userRepository;
+    private final TaskRepo taskRepository;
+    private final RoleRepo roleRepository;
 
     @Autowired
     public UserServiceImpl(UserRepo userRepository,
@@ -33,21 +32,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        return new User();
+
+        Role userRole = roleRepository.findByRole("USER");
+        user.setRoles(new ArrayList<>(Collections.singletonList(userRole)));
+        return userRepository.save(user);
     }
 
     @Override
     public User changeRoleToAdmin(User user) {
-        Role adminRole = roleRepository.findByRole(ADMIN);
+        Role adminRole = roleRepository.findByRole("ADMIN");
         user.setRoles(new ArrayList<>(Collections.singletonList(adminRole)));
         return userRepository.save(user);
     }
 
     @Override
     public List<User> findAll() {
-        return List.of();
+        return userRepository.findAll();
     }
-
 
     @Override
     public User getUserByEmail(String email) {
@@ -66,8 +67,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.getOne(id);
-        user.getTasksOwned().forEach(task -> task.setOwner(null));
-        userRepository.delete(user);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
+            if (user.getTasksOwned() != null) {
+                user.getTasksOwned().forEach(task -> {
+                    task.setOwner(null);
+                    taskRepository.save(task);
+                });
+            }
+            userRepository.delete(user);
     }
 }
