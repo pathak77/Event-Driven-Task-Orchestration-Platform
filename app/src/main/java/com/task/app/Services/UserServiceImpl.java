@@ -1,11 +1,16 @@
 package com.task.app.Services;
 
+import com.task.app.Entity.Role;
 import com.task.app.Entity.User;
 import com.task.app.Repository.RoleRepo;
 import com.task.app.Repository.TaskRepo;
 import com.task.app.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,22 +23,17 @@ public class UserServiceImpl implements UserService {
 
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,
-                           TaskRepository taskRepository,
-                           RoleRepository roleRepository,
-                           BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepo userRepository,
+                           TaskRepo taskRepository,
+                           RoleRepo roleRepository) {
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
         this.roleRepository = roleRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public User createUser(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        Role userRole = roleRepository.findByRole(USER);
-        user.setRoles(new ArrayList<>(Collections.singletonList(userRole)));
-        return userRepository.save(user);
+        return new User();
     }
 
     @Override
@@ -41,6 +41,11 @@ public class UserServiceImpl implements UserService {
         Role adminRole = roleRepository.findByRole(ADMIN);
         user.setRoles(new ArrayList<>(Collections.singletonList(adminRole)));
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return List.of();
     }
 
 

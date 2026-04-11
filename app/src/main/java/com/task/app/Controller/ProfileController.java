@@ -1,5 +1,16 @@
 package com.task.app.Controller;
 
+import com.task.app.Dto.ProfileResponseDto;
+import com.task.app.Services.TaskService;
+import com.task.app.Services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.security.Principal;
+
 @Controller
 public class ProfileController {
 
@@ -12,13 +23,11 @@ public class ProfileController {
         this.taskService = taskService;
     }
 
+
     @GetMapping("/profile")
-    public String showProfilePage(Model model, Principal principal) {
-        String email = principal.getName();
-        User user = userService.getUserByEmail(email);
-        model.addAttribute("user", user);
-        model.addAttribute("tasksOwned", taskService.findByOwnerOrderByDateDesc(user));
-        return "views/profile";
+    public ResponseEntity<ProfileResponseDto> showProfilePage(Principal principal) {
+        ProfileResponseDto res = userService.getUserByEmail(principal.getEmail());
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping("/profile/mark-done/{taskId}")

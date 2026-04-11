@@ -2,12 +2,14 @@ package com.task.app.Services;
 
 import com.task.app.Entity.Task;
 import com.task.app.Entity.User;
+import com.task.app.GlobalExceptions.BadRequestException;
 import com.task.app.Repository.TaskRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +27,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(Long id, Task updatedTask) {
-        Task task = taskRepository.getOne(id);
+    public void updateTask(Task updatedTask) {
+        Optional<Task> optionalTask = taskRepository.findById(updatedTask.getId());
+        if( optionalTask.isEmpty() ) {
+            throw new BadRequestException("Task not found");
+        }
+
+        Task task = optionalTask.get();
+
         task.setName(updatedTask.getName());
         task.setDescription(updatedTask.getDescription());
         task.setDate(updatedTask.getDate());
@@ -35,6 +43,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTask(Long id) {
+        if( !taskRepository.existById(id) )
+            throw new BadRequestException("Task not found");
+
         taskRepository.deleteById(id);
     }
 
@@ -50,14 +61,22 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void setTaskCompleted(Long id) {
-        Task task = taskRepository.getOne(id);
+        Optional<Task> optionalTask = taskRepository.findById(id);
+        if( optionalTask.isEmpty() )
+            throw new BadRequestException("Task not found");
+
+        Task task = optionalTask.get();
         task.setCompleted(true);
         taskRepository.save(task);
     }
 
     @Override
     public void setTaskNotCompleted(Long id) {
-        Task task = taskRepository.getOne(id);
+        Optional<Task> optionalTask = taskRepository.findById(id);
+        if( optionalTask.isEmpty() )
+            throw new BadRequestException("Task not found");
+
+        Task task = optionalTask.get();
         task.setCompleted(false);
         taskRepository.save(task);
     }

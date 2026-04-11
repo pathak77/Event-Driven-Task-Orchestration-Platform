@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface TaskRepo extends JpaRepository<Task, Long> {
     List<Task> findByOwnerOrderByDateDesc(User user);
+    Boolean existById(Long id);
     Optional<Task> findById(Long id);
 }
