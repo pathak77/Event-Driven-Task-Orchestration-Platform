@@ -55,6 +55,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<Task> findAllComplete(boolean data) {
+        return taskRepository.findByCompletedIsContainingIgnoreCase(data);
+    }
+
+    @Override
     public List<Task> findByOwnerOrderByDateDesc(User user) {
         return taskRepository.findByOwnerOrderByDateDesc(user);
     }

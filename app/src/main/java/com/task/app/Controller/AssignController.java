@@ -22,32 +22,26 @@ public class AssignController {
 
 
         @GetMapping("/assignment")
-        public String showAssigmentForm(Model model) {
-            model.addAttribute("users", userService.findAllUsers());
-            model.addAttribute("tasks", taskService.findAllTasks());
-            return "assignment-form"; // name of your .html file
+        public String showAssigment() {
+
         }
 
 
         @GetMapping("/assignment/{userId}")
         public String showUserAssigmentForm(@PathVariable Long userId) {
-            model.addAttribute("user", userService.findById(userId));
-            model.addAttribute("availableTasks", taskService.findUnassignedTasks());
-            return "user-assignment";
+
         }
 
 
         @GetMapping("/assignment/assign/{userId}/{taskId}")
         public String assignTaskToUser(@PathVariable Long userId, @PathVariable Long taskId) {
-            userService.assignTask(userId, taskId);
-            return "redirect:/assignment/" + userId;
+
         }
 
 
         @GetMapping("/assignment/unassign/{userId}/{taskId}")
         public String unassignTaskFromUser(@PathVariable Long userId, @PathVariable Long taskId) {
-            userService.unassignTask(userId, taskId);
-            return "redirect:/assignment/" + userId;
+
         }
 
 }

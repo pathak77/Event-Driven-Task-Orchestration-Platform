@@ -57,39 +57,6 @@ public class Task {
         return ChronoUnit.DAYS.between(today, deadline);
     }
 
-  
-    public Task(@NotEmpty String name,
-                @NotEmpty @Size(max = 1200) String description,
-                @NotNull Date date,
-                boolean isCompleted,
-                String creatorName) {
-        this.name = name;
-        this.description = description;
-        this.date = date;
-        this.isCompleted = isCompleted;
-        this.creatorName = creatorName;
-    }
-
-    public Task(@NotEmpty String name,
-                @NotEmpty @Size(max = 1200) String description,
-                @NotNull Date date,
-                boolean isCompleted,
-                String creatorName,
-                User owner) {
-        this.name = name;
-        this.description = description;
-        this.date = date;
-        this.isCompleted = isCompleted;
-        this.creatorName = creatorName;
-        this.owner = owner;
-    }
-
-
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
 
     @Override
     public boolean equals(Object o) {

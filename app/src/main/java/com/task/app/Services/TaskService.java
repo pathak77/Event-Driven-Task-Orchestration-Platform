@@ -15,6 +15,8 @@ public interface TaskService {
 
     List<Task> findAll();
 
+    List<Task> findAllComplete(boolean data);
+
     List<Task> findByOwnerOrderByDateDesc(User user);
 
     void setTaskCompleted(Long id);
