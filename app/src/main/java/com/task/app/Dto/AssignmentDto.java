@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Builder
 @Data
@@ -25,9 +25,9 @@ public class AssignmentDto {
 
     @NotNull
     @Builder.Default()
-    Date startDate = new Date();
+    LocalDate startDate = LocalDate.now();
 
-    Date endDate;
+    LocalDate endDate;
 
     int priority;
 

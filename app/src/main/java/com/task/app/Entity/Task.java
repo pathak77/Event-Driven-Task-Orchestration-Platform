@@ -10,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -19,6 +19,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "tasks")
 public class Task {
 
     @Id
@@ -35,45 +36,38 @@ public class Task {
     @Size(max = 1200, message = "1000")
     private String description;
 
+
     @NotNull(message = "Date cant be null")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date date;
+    private LocalDate date;
 
     private boolean isCompleted;
 
     private String creatorName;
 
+    @ManyToMany(mappedBy = "tasksList")
+    private List<User> assigneesList;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "OWNER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
     private User owner;
 
-    public long daysLeftUntilDeadline(Date date) {
-        LocalDate deadline = date.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+    public long daysLeftUntilDeadline(LocalDate date) {
         LocalDate today = LocalDate.now();
 
-        return ChronoUnit.DAYS.between(today, deadline);
+        return ChronoUnit.DAYS.between(today, date);
     }
 
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return isCompleted == task.isCompleted &&
-                Objects.equals(id, task.id) &&
-                name.equals(task.name) &&
-                description.equals(task.description) &&
-                date.equals(task.date) &&
-                Objects.equals(creatorName, task.creatorName) &&
-                Objects.equals(owner, task.owner);
+        if (!(o instanceof Task task)) return false;
+        return Objects.equals(id, task.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, date, isCompleted, creatorName, owner);
+        return Objects.hash(id);
     }
 }

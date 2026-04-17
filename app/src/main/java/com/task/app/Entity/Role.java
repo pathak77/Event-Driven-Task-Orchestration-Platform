@@ -29,8 +29,6 @@ public class Role {
     private List<User> users;
 
 
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

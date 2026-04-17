@@ -14,11 +14,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
@@ -27,71 +24,41 @@ public class User {
     private Long id;
 
     @Email
-    @NotEmpty(message = "Email should not be empty")
+    @NotEmpty
     @Column(unique = true)
     private String email;
 
-    @NotEmpty(message = "Username should not be empty")
     private String name;
 
-
-    @NotEmpty(message = "Password should not be empty")
-    @Length(min = 8, message = "Password less than 8 digits long")
     private String password;
 
 
     @Column(columnDefinition = "VARCHAR(255) DEFAULT 'images/user.png'")
     private String photo;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
-    private List<Task> tasksOwned;
 
-    @ManyToMany(cascade = CascadeType.MERGE)
-    @JoinTable(name = "user_role",
+    @ManyToMany
+    @JoinTable(
+            name = "task_assignments",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id")
+    )
+    private List<Task> tasksList;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<Task> ownedTasks;
+
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
-    public List<Task> getTasksCompleted() {
-        return tasksOwned.stream()
-                .filter(Task::isCompleted)
-                .collect(Collectors.toList());
-    }
-
-    public List<Task> getTasksInProgress() {
-        return tasksOwned.stream()
-                .filter(task -> !task.isCompleted())
-                .collect(Collectors.toList());
-    }
 
     public boolean isAdmin() {
         String roleName = "ADMIN";
         return roles.stream().map(Role::getRole).anyMatch(roleName::equals);
-    }
-
-
-    public User(@Email @NotEmpty String email,
-                @NotEmpty String name,
-                @NotEmpty @Length(min = 5) String password,
-                String photo) {
-        this.email = email;
-        this.name = name;
-        this.password = password;
-        this.photo = photo;
-    }
-
-    public User(@Email @NotEmpty String email,
-                @NotEmpty String name,
-                @NotEmpty @Length(min = 5) String password,
-                String photo,
-                List<Task> tasksOwned,
-                List<Role> roles) {
-        this.email = email;
-        this.name = name;
-        this.password = password;
-        this.photo = photo;
-        this.tasksOwned = tasksOwned;
-        this.roles = roles;
     }
 
 
@@ -107,12 +74,11 @@ public class User {
                 this.name.equals(user.name) &&
                 this.password.equals(user.password) &&
                 Objects.equals(this.photo, user.photo) &&
-                Objects.equals(this.tasksOwned, user.tasksOwned) &&
                 Objects.equals(this.roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, name, password, photo, tasksOwned, roles);
+        return Objects.hash(id, email, name, password, photo, roles);
     }
 }

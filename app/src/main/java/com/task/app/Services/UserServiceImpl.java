@@ -1,48 +1,54 @@
 package com.task.app.Services;
 
 import com.task.app.Entity.Role;
+import com.task.app.Entity.Task;
 import com.task.app.Entity.User;
-import com.task.app.Repository.RoleRepo;
-import com.task.app.Repository.TaskRepo;
+import com.task.app.GlobalExceptions.BadRequestException;
 import com.task.app.Repository.UserRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private static final String ADMIN = "ADMIN";
-    private static final String USER = "USER";
 
     private final UserRepo userRepository;
-    private final TaskRepo taskRepository;
-    private final RoleRepo roleRepository;
+    private final TaskServiceImpl taskService;
+    private final RoleServiceImpl roleService;
 
     @Autowired
     public UserServiceImpl(UserRepo userRepository,
-                           TaskRepo taskRepository,
-                           RoleRepo roleRepository) {
+                           TaskServiceImpl taskService,
+                           RoleServiceImpl roleService) {
         this.userRepository = userRepository;
-        this.taskRepository = taskRepository;
-        this.roleRepository = roleRepository;
+        this.taskService = taskService;
+        this.roleService = roleService;
     }
 
     @Override
     public User createUser(User user) {
 
-        Role userRole = roleRepository.findByRole("USER");
-        user.setRoles(new ArrayList<>(Collections.singletonList(userRole)));
-        return userRepository.save(user);
     }
 
-    @Override
-    public User changeRoleToAdmin(User user) {
-        Role adminRole = roleRepository.findByRole("ADMIN");
-        user.setRoles(new ArrayList<>(Collections.singletonList(adminRole)));
-        return userRepository.save(user);
+    @Transactional
+    public User updateUserRoles(Long userId, Set<Long> roleIds) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        List<Role> newRoles = roleService.findAllById(roleIds.stream().toList());
+
+        user.getRoles().clear();
+        user.getRoles().addAll(newRoles);
+
+        userRepository.save(user);
+
+        return user;
     }
 
     @Override
@@ -67,15 +73,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("User not found"));
+        Optional<User> user = userRepository.findById(id);
 
-            if (user.getTasksOwned() != null) {
-                user.getTasksOwned().forEach(task -> {
-                    task.setOwner(null);
-                    taskRepository.save(task);
-                });
-            }
-            userRepository.delete(user);
+        if(user.isEmpty())
+            throw new BadRequestException("User doesn't exist");
+
+        User presentUser = user.get();
+        List<Task> taskList = taskService.findByOwnerOrderByDateDesc(presentUser);
+            taskList.stream().map(task -> {
+            task.setOwner(null);
+            return task;}
+            );
     }
 }

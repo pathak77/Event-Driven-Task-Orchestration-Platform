@@ -14,4 +14,5 @@ public interface TaskRepo extends JpaRepository<Task, Long> {
     List<Task> findByCompletedIsContainingIgnoreCase(boolean completed);
     Boolean existById(Long id);
     Optional<Task> findById(Long id);
+
 }

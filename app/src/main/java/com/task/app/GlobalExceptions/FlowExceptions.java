@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-class FlowExceptions {
+public class FlowExceptions {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
@@ -40,5 +40,5 @@ class FlowExceptions {
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
-
+    
 }
