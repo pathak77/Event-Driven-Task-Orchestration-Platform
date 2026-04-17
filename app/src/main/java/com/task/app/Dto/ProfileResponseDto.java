@@ -1,6 +1,7 @@
 package com.task.app.Dto;
 
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +18,12 @@ public class ProfileResponseDto{
 
     String bio;
 
-    CharSequence avatarUrl;
+    String avatarUrl;
 
     @Size(min = 10, max = 10)
-    int phoneNumber;
+    String phoneNumber;
+
+    @Email
+    String email;
 }
 

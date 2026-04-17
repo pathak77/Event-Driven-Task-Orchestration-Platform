@@ -32,10 +32,13 @@ public class User {
 
     private String password;
 
+    private String phoneNumber;
 
     @Column(columnDefinition = "VARCHAR(255) DEFAULT 'images/user.png'")
     private String photo;
 
+    @Length(max = 150)
+    String bio;
 
     @ManyToMany
     @JoinTable(

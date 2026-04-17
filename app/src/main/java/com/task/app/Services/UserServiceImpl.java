@@ -1,13 +1,17 @@
 package com.task.app.Services;
 
+import com.task.app.Dto.ProfileUpdateDto;
 import com.task.app.Entity.Role;
 import com.task.app.Entity.Task;
 import com.task.app.Entity.User;
 import com.task.app.GlobalExceptions.BadRequestException;
 import com.task.app.Repository.UserRepo;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 import java.util.List;
@@ -33,6 +37,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
 
+    }
+
+    @Override
+    public User updateProfile(Long id,  ProfileUpdateDto updateDto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        user.setBio(updateDto.getBio());
+        user.setPhoto(updateDto.getAvatarUrl());
+        user.setPhoneNumber(updateDto.getPhoneNumber());
+        user.setEmail(updateDto.getEmail());
+
+        return userRepository.save(user);
     }
 
     @Transactional

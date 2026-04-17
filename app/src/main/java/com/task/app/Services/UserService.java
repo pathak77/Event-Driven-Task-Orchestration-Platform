@@ -1,5 +1,6 @@
 package com.task.app.Services;
 
+import com.task.app.Dto.ProfileUpdateDto;
 import com.task.app.Entity.User;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public interface UserService {
     List<User> findAll();
 
     User getUserByEmail(String email);
+
+    User updateProfile(Long id,  ProfileUpdateDto updateDto);
 
     boolean isUserEmailPresent(String email);
 
