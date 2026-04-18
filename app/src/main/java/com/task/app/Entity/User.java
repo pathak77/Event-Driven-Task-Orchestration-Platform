@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -54,32 +54,7 @@ public class User {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles;
+    private Set<Role> roles;
 
 
-    public boolean isAdmin() {
-        String roleName = "ADMIN";
-        return roles.stream().map(Role::getRole).anyMatch(roleName::equals);
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-        return Objects.equals(this.id, user.id) &&
-                this.email.equals(user.email) &&
-                this.name.equals(user.name) &&
-                this.password.equals(user.password) &&
-                Objects.equals(this.photo, user.photo) &&
-                Objects.equals(this.roles, user.roles);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email, name, password, photo, roles);
-    }
 }

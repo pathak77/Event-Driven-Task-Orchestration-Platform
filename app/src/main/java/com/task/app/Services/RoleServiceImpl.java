@@ -1,11 +1,13 @@
 package com.task.app.Services;
 
+import com.task.app.Dto.Status;
 import com.task.app.Entity.Role;
 import com.task.app.Repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -22,9 +24,8 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.save(role);
     }
 
-    public List<Role> findAllById(List<Long> roleIds){
-        List<Role> roles = roleRepository.findAllById(roleIds);
-        return roles;
+    public Set<Role> findAllById(Set<Status> roleIds){
+        return roleRepository.findByNameIn(roleIds);
     }
 
     @Override

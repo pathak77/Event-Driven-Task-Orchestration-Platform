@@ -1,6 +1,7 @@
 package com.task.app.Services;
 
 import com.task.app.Dto.ProfileUpdateDto;
+import com.task.app.Dto.Status;
 import com.task.app.Dto.UserDto;
 import com.task.app.Entity.User;
 
@@ -12,7 +13,7 @@ public interface UserService {
 
     void syncUserFromGateway(UserDto userDto);
 
-    User updateUserRoles(Long userId, Set<Long> roleIds);
+    User updateUserRoles(Long userId, Set<Status> roleIds);
 
     List<User> findAll();
 
@@ -25,4 +26,6 @@ public interface UserService {
     User getUserById(Long userId);
 
     void deleteUser(Long id);
+
+    public boolean hasRole(Long userId, Status roleName);
 }

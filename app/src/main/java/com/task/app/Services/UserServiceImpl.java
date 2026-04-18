@@ -1,6 +1,7 @@
 package com.task.app.Services;
 
 import com.task.app.Dto.ProfileUpdateDto;
+import com.task.app.Dto.Status;
 import com.task.app.Dto.UserDto;
 import com.task.app.Entity.Role;
 import com.task.app.Entity.Task;
@@ -89,21 +90,25 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-
+    @Override
     @Transactional
-    public User updateUserRoles(Long userId, Set<Long> roleIds) {
+    public User updateUserRoles(Long userId, Set<Status> roleNames) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        List<Role> newRoles = roleService.findAllById(roleIds.stream().toList());
+
+        Set<Role> roles = roleService.findAllById(roleNames);
+
+        if (roles.size() != roleNames.size()) {
+            throw new IllegalArgumentException("One or more roles were not found in the database");
+        }
+
 
         user.getRoles().clear();
-        user.getRoles().addAll(newRoles);
+        user.getRoles().addAll(roles);
 
-        userRepository.save(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
@@ -139,5 +144,10 @@ public class UserServiceImpl implements UserService {
             task.setOwner(null);
             return task;}
             );
+    }
+
+    @Override
+    public boolean hasRole(Long userId, Status roleName) {
+        return userRepository.existsByUserIdAndStatus(userId, roleName);
     }
 }
