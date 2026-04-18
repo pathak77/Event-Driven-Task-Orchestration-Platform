@@ -1,5 +1,6 @@
 package com.task.app.Repository;
 
+import com.task.app.Dto.Authority;
 import com.task.app.Dto.Status;
 import com.task.app.Entity.User;
 import jakarta.validation.constraints.Email;
@@ -17,7 +18,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     Optional<User> findByEmailOrPhoneNumber(@Email @NotEmpty String email, String phoneNumber);
 
-    boolean existsByEmailOrPhoneNumber(String email);
+    boolean existsByEmailOrPhoneNumber(String email, String phone);
 
     boolean existsByUsername(String username);
 
@@ -25,5 +26,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     boolean existsById(Long id);
 
-    boolean existsByUserIdAndStatus(Long userId, Status status);
+    boolean existsByUserIdAndAuthority(Long userId, Authority authority);
 }

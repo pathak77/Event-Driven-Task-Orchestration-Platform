@@ -1,7 +1,7 @@
 package com.task.app.Services;
 
 import com.task.app.Dto.ProfileUpdateDto;
-import com.task.app.Dto.Status;
+import com.task.app.Dto.Authority;
 import com.task.app.Dto.UserDto;
 import com.task.app.Entity.Role;
 import com.task.app.Entity.Task;
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User updateUserRoles(Long userId, Set<Status> roleNames) {
+    public User updateUserRoles(Long userId, Set<Authority> roleNames) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasRole(Long userId, Status roleName) {
-        return userRepository.existsByUserIdAndStatus(userId, roleName);
+    public boolean hasRole(Long userId, Authority roleName) {
+        return userRepository.existsByUserIdAndAuthority(userId, roleName);
     }
 }

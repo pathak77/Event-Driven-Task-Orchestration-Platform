@@ -17,7 +17,7 @@ public class SecurityFilter {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**", "/login").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 

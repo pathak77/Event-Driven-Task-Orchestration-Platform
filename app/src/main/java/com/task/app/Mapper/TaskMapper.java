@@ -7,6 +7,7 @@ import com.task.app.Dto.TaskUpdateDto;
 import com.task.app.Dto.Status;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 
 @Component
@@ -31,8 +32,8 @@ public class TaskMapper {
         if (dto == null) return null;
 
 
-        Date endDate = dto.getEndDate() != null
-                ? Date.from(dto.getEndDate().atZone(ZoneId.systemDefault()).toInstant())
+        LocalDate endDate = dto.getEndDate() != null
+                ? LocalDate.from(dto.getEndDate().atZone(ZoneId.systemDefault()).toInstant())
                 : null;
 
         return Task.builder()

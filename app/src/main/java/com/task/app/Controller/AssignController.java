@@ -1,49 +1,72 @@
 package com.task.app.Controller;
 
-
+import com.task.app.Dto.TaskResponseDto;
+import com.task.app.Security.UserPrincipal;
 import com.task.app.Services.TaskService;
 import com.task.app.Services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/assignments")
 public class AssignController {
 
         private final UserService userService;
         private final TaskService taskService;
 
-        @Autowired
         public AssignController(UserService userService, TaskService taskService) {
-            this.userService = userService;
-            this.taskService = taskService;
+                this.userService = userService;
+                this.taskService = taskService;
         }
 
 
-        @GetMapping("/assignment")
-        public String showAssigment() {
+        @GetMapping("/me")
+        public ResponseEntity<List<TaskResponseDto>> getMyAssignments(
+                @AuthenticationPrincipal UserPrincipal currentUser) {
 
+                Long myId = Long.parseLong(currentUser.id());
+                List<TaskResponseDto> myTasks = taskService.getTasksAssignedToUser(myId);
+
+                return ResponseEntity.ok(myTasks);
         }
 
 
-        @GetMapping("/assignment/{userId}")
-        public String showUserAssigmentForm(@PathVariable Long userId) {
+        @GetMapping("/{userId}")
+        public ResponseEntity<List<TaskResponseDto>> getUserAssignments(@PathVariable Long userId) {
 
+                List<TaskResponseDto> userTasks = taskService.getTasksAssignedToUser(userId);
+
+                return ResponseEntity.ok(userTasks);
         }
 
 
-        @GetMapping("/assignment/assign/{userId}/{taskId}")
-        public String assignTaskToUser(@PathVariable Long userId, @PathVariable Long taskId) {
+        @PostMapping("/{taskId}/assign-to/{targetUserId}")
+        public ResponseEntity<String> assignTaskToUser(
+                @PathVariable Long taskId,
+                @PathVariable Long targetUserId,
+                @AuthenticationPrincipal UserPrincipal currentUser) {
 
+                Long requestingUserId = Long.parseLong(currentUser.id());
+
+                taskService.assignTask(taskId, targetUserId, requestingUserId);
+
+                return ResponseEntity.ok("Task successfully assigned.");
         }
 
 
+        @DeleteMapping("/{taskId}/unassign/{targetUserId}")
+        public ResponseEntity<String> unassignTaskFromUser(
+                @PathVariable Long taskId,
+                @PathVariable Long targetUserId,
+                @AuthenticationPrincipal UserPrincipal currentUser) {
 
+                Long requestingUserId = Long.parseLong(currentUser.id());
 
-        @GetMapping("/assignment/unassign/{userId}/{taskId}")
-        public String unassignTaskFromUser(@PathVariable Long userId, @PathVariable Long taskId) {
+                taskService.unassignTask(taskId, targetUserId, requestingUserId);
 
+                return ResponseEntity.ok("Task successfully unassigned.");
         }
-
 }

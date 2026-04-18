@@ -1,5 +1,6 @@
 package com.task.app.Services;
 
+import com.task.app.Dto.TaskResponseDto;
 import com.task.app.Entity.Task;
 import com.task.app.Entity.User;
 
@@ -11,7 +12,7 @@ public interface TaskService {
 
     void updateTask(Task task);
 
-    void deleteTask(Long id);
+    void deleteTask(Long taskId, Long requestingUserId);
 
     List<Task> findAll();
 
@@ -29,5 +30,9 @@ public interface TaskService {
 
     void assignTaskToUser(Task task, User user);
 
-    void unassignTask(Task task);
+    void unassignTask(Long taskId, Long targetUserId, Long requestingUserId);
+
+    void assignTask(Long taskId, Long targetUserId, Long requestingUserId);
+
+    List<TaskResponseDto> getTasksAssignedToUser(Long userId);
 }

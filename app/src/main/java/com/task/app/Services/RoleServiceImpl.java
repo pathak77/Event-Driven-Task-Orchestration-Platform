@@ -1,6 +1,6 @@
 package com.task.app.Services;
 
-import com.task.app.Dto.Status;
+import com.task.app.Dto.Authority;
 import com.task.app.Entity.Role;
 import com.task.app.Repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.save(role);
     }
 
-    public Set<Role> findAllById(Set<Status> roleIds){
+    public Set<Role> findAllById(Set<Authority> roleIds){
         return roleRepository.findByNameIn(roleIds);
     }
 

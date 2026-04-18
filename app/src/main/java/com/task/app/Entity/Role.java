@@ -1,4 +1,5 @@
 package com.task.app.Entity;
+import com.task.app.Dto.Authority;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(unique = true, nullable = false)
-    private Status name;
+    private Authority name;
 
     @ManyToMany(mappedBy = "roles")
     private List<User> users;

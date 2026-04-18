@@ -5,6 +5,7 @@ import com.task.app.Dto.TaskResponseDto;
 import com.task.app.Dto.TaskUpdateDto;
 import com.task.app.Entity.Task;
 import com.task.app.Mapper.TaskMapper;
+import com.task.app.Security.UserPrincipal;
 import com.task.app.Services.TaskService;
 import com.task.app.Services.TaskServiceImpl;
 import com.task.app.Services.UserService;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +35,7 @@ public class TaskController {
         this.taskMapper = taskMapper;
     }
 
-    // 1. Get all tasks
+
     @GetMapping("/tasks")
     public ResponseEntity<List<TaskResponseDto>> listTasks() {
         List<TaskResponseDto> tasks = taskService.findAll().stream()
@@ -94,9 +96,14 @@ public class TaskController {
     }
 
     // 6. Delete a task
-    @DeleteMapping("/task/delete/{id}") // Changed to DeleteMapping for REST standards
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    @DeleteMapping("/task/delete/{id}")
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+
+        Long requestingUserId = Long.parseLong(currentUser.id());
+        taskService.deleteTask(id, requestingUserId);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
