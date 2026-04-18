@@ -1,17 +1,16 @@
 package com.task.app.Services;
 
 import com.task.app.Dto.ProfileUpdateDto;
+import com.task.app.Dto.UserDto;
 import com.task.app.Entity.Role;
 import com.task.app.Entity.Task;
 import com.task.app.Entity.User;
 import com.task.app.GlobalExceptions.BadRequestException;
 import com.task.app.Repository.UserRepo;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 import java.util.List;
@@ -35,22 +34,61 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) {
+    public User createUser(UserDto userDto) {
+        User user = User.builder()
+                .id(userDto.getUserId())
+                .name(userDto.getUsername())
+                .build();
 
+        if( userRepository.existsById(userDto.getUserId()) ||
+            userRepository.existsByUsername(userDto.getUsername())) {
+            throw new BadRequestException("User already exists");
+        }
+
+        return userRepository.save(user);
     }
+
+    @Override
+    @Transactional
+    public void syncUserFromGateway(UserDto userDto) {
+        if (userRepository.existsById(userDto.getUserId())) {
+            return;
+        }
+
+        User user = User.builder()
+                .id(userDto.getUserId())
+                .name(userDto.getUsername())
+                .build();
+
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+
+        }
+    }
+
 
     @Override
     public User updateProfile(Long id,  ProfileUpdateDto updateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.setBio(updateDto.getBio());
-        user.setPhoto(updateDto.getAvatarUrl());
-        user.setPhoneNumber(updateDto.getPhoneNumber());
-        user.setEmail(updateDto.getEmail());
+        Optional<User> existingUser = userRepository.findByEmailOrPhoneNumber( (updateDto.getEmail().isBlank()) ? null : updateDto.getEmail(),
+                (updateDto.getPhoneNumber().isEmpty()) ? null : updateDto.getPhoneNumber() );
+
+        if(existingUser.isPresent()) {
+            if(existingUser.get().getId().equals(id)) {
+                user.setBio( (updateDto.getBio().isEmpty()) ? null : updateDto.getBio());
+                user.setPhoto( (updateDto.getAvatarUrl().isEmpty()) ? null : updateDto.getAvatarUrl());
+                user.setPhoneNumber( (updateDto.getPhoneNumber().isEmpty()) ? null : updateDto.getPhoneNumber() );
+                user.setEmail( (updateDto.getEmail().isBlank()) ? null : updateDto.getEmail() );
+            }
+            else throw new BadRequestException("User with same email or phone exists");
+        }
 
         return userRepository.save(user);
     }
+
 
     @Transactional
     public User updateUserRoles(Long userId, Set<Long> roleIds) {
@@ -75,12 +113,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmailOrPhoneNumber(email, null).orElse(null);
     }
 
     @Override
     public boolean isUserEmailPresent(String email) {
-        return userRepository.findByEmail(email) != null;
+        return userRepository.existsByEmail(email);
     }
 
     @Override

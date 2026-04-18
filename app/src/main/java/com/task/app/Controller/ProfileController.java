@@ -3,6 +3,7 @@ package com.task.app.Controller;
 
 import com.task.app.Dto.ProfileResponseDto;
 import com.task.app.Dto.ProfileUpdateDto;
+import com.task.app.Dto.UserDto;
 import com.task.app.Entity.User;
 import com.task.app.Services.UserService;
 import com.task.app.Services.UserServiceImpl;

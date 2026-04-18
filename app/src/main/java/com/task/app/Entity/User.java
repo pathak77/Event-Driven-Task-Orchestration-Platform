@@ -3,10 +3,7 @@ package com.task.app.Entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
+@Builder
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Table(name = "users")
 public class User {

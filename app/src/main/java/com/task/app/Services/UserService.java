@@ -1,13 +1,16 @@
 package com.task.app.Services;
 
 import com.task.app.Dto.ProfileUpdateDto;
+import com.task.app.Dto.UserDto;
 import com.task.app.Entity.User;
 
 import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-    User createUser(User user);
+    User createUser(UserDto user);
+
+    void syncUserFromGateway(UserDto userDto);
 
     User updateUserRoles(Long userId, Set<Long> roleIds);
 
