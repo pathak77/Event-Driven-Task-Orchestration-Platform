@@ -17,13 +17,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepository;
-    private final TaskServiceImpl taskService;
-    private final RoleServiceImpl roleService;
+    private final TaskService taskService;
+    private final RoleService roleService;
 
     @Autowired
     public UserServiceImpl(UserRepo userRepository,
@@ -37,8 +38,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserDto userDto) {
         User user = User.builder()
-                .id(userDto.getUserId())
-                .name(userDto.getUsername())
+                .userId(userDto.getUserId())
+                .username(userDto.getUsername())
                 .build();
 
         if( userRepository.existsById(userDto.getUserId()) ||
@@ -57,8 +58,8 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = User.builder()
-                .id(userDto.getUserId())
-                .name(userDto.getUsername())
+                .userId(userDto.getUserId())
+                .username(userDto.getUsername())
                 .build();
 
         try {
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
                 (updateDto.getPhoneNumber().isEmpty()) ? null : updateDto.getPhoneNumber() );
 
         if(existingUser.isPresent()) {
-            if(existingUser.get().getId().equals(id)) {
+            if(existingUser.get().getUserId().equals(id)) {
                 user.setBio( (updateDto.getBio().isEmpty()) ? null : updateDto.getBio());
                 user.setPhoto( (updateDto.getAvatarUrl().isEmpty()) ? null : updateDto.getAvatarUrl());
                 user.setPhoneNumber( (updateDto.getPhoneNumber().isEmpty()) ? null : updateDto.getPhoneNumber() );
@@ -92,23 +93,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User updateUserRoles(Long userId, Set<Authority> roleNames) {
-
+    public User updateUserRoles(Long userId, Set<Authority> newAuthorities) {
+        // 1. Fetch the user (EAGER fetch handles roles, but findById is fine here)
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        Set<Role> newRoles = roleService.findByNameIn(newAuthorities);
 
-        Set<Role> roles = roleService.findAllById(roleNames);
+        user.setRoles(newRoles);
 
-        if (roles.size() != roleNames.size()) {
-            throw new IllegalArgumentException("One or more roles were not found in the database");
-        }
-
-
-        user.getRoles().clear();
-        user.getRoles().addAll(roles);
-
-        return userRepository.save(user);
+        return user;
     }
 
     @Override
@@ -146,8 +140,9 @@ public class UserServiceImpl implements UserService {
             );
     }
 
+
     @Override
     public boolean hasRole(Long userId, Authority roleName) {
-        return userRepository.existsByUserIdAndAuthority(userId, roleName);
+        return userRepository.existsByUserIdAndRoles_Name(userId, roleName);
     }
 }

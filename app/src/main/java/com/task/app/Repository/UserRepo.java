@@ -2,6 +2,7 @@ package com.task.app.Repository;
 
 import com.task.app.Dto.Authority;
 import com.task.app.Dto.Status;
+import com.task.app.Entity.Role;
 import com.task.app.Entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -26,5 +27,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     boolean existsById(Long id);
 
-    boolean existsByUserIdAndAuthority(Long userId, Authority authority);
+    boolean existsByUserIdAndRoles_Name(Long userId, Authority name);
+
 }

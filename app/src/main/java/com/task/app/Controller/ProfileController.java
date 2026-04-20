@@ -29,7 +29,7 @@ public class ProfileController {
         User user = userService.getUserById(id);
 
         ProfileResponseDto response = new ProfileResponseDto();
-        response.setUsername(user.getName());
+        response.setUsername(user.getUsername());
         response.setAvatarUrl(user.getPhoto());
 
 
@@ -46,7 +46,7 @@ public class ProfileController {
 
 
         ProfileResponseDto response = new ProfileResponseDto();
-        response.setUsername(updatedUser.getName());
+        response.setUsername(updatedUser.getUsername());
         response.setAvatarUrl(updatedUser.getPhoto());
 
         return ResponseEntity.ok(response);

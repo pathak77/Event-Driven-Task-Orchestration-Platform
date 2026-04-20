@@ -32,4 +32,17 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> findAll() {
         return roleRepository.findAll();
     }
+
+    @Override
+    public Set<Role> findByNameIn(Set<Authority> newAuthorities) {
+        return roleRepository.findByNameIn(newAuthorities);
+    }
+
+    @Override
+    public Role findByName(Authority authority) {
+        return roleRepository.findByName(authority)
+                .orElseThrow(() -> new RuntimeException("Error: Role " + authority + " not found."));
+    }
+
+
 }

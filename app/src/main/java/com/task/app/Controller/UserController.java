@@ -1,6 +1,7 @@
 package com.task.app.Controller;
 
 import com.task.app.Dto.Authority;
+import com.task.app.Entity.Role;
 import com.task.app.Entity.User;
 import com.task.app.Security.UserPrincipal;
 import com.task.app.Services.UserService;

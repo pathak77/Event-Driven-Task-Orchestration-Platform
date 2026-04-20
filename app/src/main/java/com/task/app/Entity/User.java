@@ -19,14 +19,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     @Email
     @NotEmpty
     @Column(unique = true)
     private String email;
 
-    private String name;
+    private String username;
 
     private String password;
 
@@ -40,11 +40,11 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "task_assignments",
+            name = "user_task_assignments",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "task_id")
     )
-    private List<Task> tasksList;
+    private Set<Task> assignedTasks = new HashSet<>();
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Task> ownedTasks;
@@ -55,6 +55,5 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
-
 
 }

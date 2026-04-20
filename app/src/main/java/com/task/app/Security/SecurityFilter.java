@@ -16,9 +16,9 @@ public class SecurityFilter {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**", "/login").permitAll()
+                        .requestMatchers("/*", "/login").permitAll()
 
-                        .anyRequest().authenticated()
+                       // .anyRequest().authenticated()
                 )
 
                 .logout(logout -> logout

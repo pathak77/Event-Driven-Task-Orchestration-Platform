@@ -55,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new BadRequestException("Task not found"));
 
 
-        if (task.getOwner() == null || !task.getOwner().getId().equals(requestingUserId)) {
+        if (task.getOwner() == null || !task.getOwner().getUserId().equals(requestingUserId)) {
             throw new BadRequestException("Unauthorized: Only the owner can delete this task.");
         }
 
@@ -123,15 +123,15 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new BadRequestException("Task not found"));
 
-        if (task.getOwner() == null || !task.getOwner().getId().equals(requestingUserId)) {
+        if (task.getOwner() == null || !task.getOwner().getUserId().equals(requestingUserId)) {
             throw new BadRequestException("Unauthorized: Only the owner can unassign users from this task.");
         }
 
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
-        if (targetUser.getTasksList().contains(task)) {
-            targetUser.getTasksList().remove(task);
+        if (targetUser.getAssignedTasks().contains(task)) {
+            targetUser.getAssignedTasks().remove(task);
             userRepository.save(targetUser);
         }
     }
@@ -144,8 +144,8 @@ public class TaskServiceImpl implements TaskService {
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
-        if (!targetUser.getTasksList().contains(task)) {
-            targetUser.getTasksList().add(task);
+        if (!targetUser.getAssignedTasks().contains(task)) {
+            targetUser.getAssignedTasks().add(task);
             userRepository.save(targetUser);
         }
     }
@@ -153,7 +153,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponseDto> getTasksAssignedToUser(Long userId) {
 
-        List<Task> userTask = taskRepository.findByAssigneesList_Id(userId);
+        List<Task> userTask = taskRepository.findByAssignedUsers(userId);
 
         return userTask.stream().map(taskmapper::toResponseDto).toList();
     }

@@ -2,7 +2,6 @@ package com.task.app.Security;
 
 import com.task.app.Dto.UserDto;
 import com.task.app.Services.UserService;
-import com.task.app.Services.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,9 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 
-import javax.security.auth.Subject;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Collections;
 
 

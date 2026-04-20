@@ -10,8 +10,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -45,8 +47,8 @@ public class Task {
 
     private String creatorName;
 
-    @ManyToMany(mappedBy = "tasksList")
-    private List<User> assigneesList;
+    @ManyToMany(mappedBy = "assignedTasks")
+    private Set<User> assignedUsers = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")

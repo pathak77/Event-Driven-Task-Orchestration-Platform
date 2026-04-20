@@ -3,6 +3,7 @@ package com.task.app.Services;
 import com.task.app.Dto.Authority;
 import com.task.app.Dto.ProfileUpdateDto;
 import com.task.app.Dto.UserDto;
+import com.task.app.Entity.Role;
 import com.task.app.Entity.User;
 
 import java.util.List;
@@ -27,5 +28,5 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    public boolean hasRole(Long userId, Authority roleName);
+    boolean hasRole(Long userId, Authority roleName);
 }
