@@ -1,0 +1,21 @@
+#version: '3.8'
+
+services:
+
+  api_gateway:
+    build: ./gateway
+    container_name: gateway
+    ports:
+      - "3300:80"
+    volumes:
+      - ./gateway/conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ./gateway/scripts:/usr/local/openresty/nginx/lua:ro
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+
+  redis:
+    image: redis:alpine  
+    container_name: redis
+
+volumes:
+  auth-postgres-data: {}
