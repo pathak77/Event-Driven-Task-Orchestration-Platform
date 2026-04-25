@@ -53,9 +53,7 @@
 		</dependency>
 
 
-<!---
-                   DATABASE DEPENDENCY
-                -->
+<!---                    DATABASE DEPENDENCY  -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -71,6 +69,15 @@
 
 		<!---   END      -->
 
+
+		<!---      DEPENDENCY FOR KAFKA  -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+
+		<!---   END      -->
 <!---      DEPENDENCY FOR LOMBOK -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

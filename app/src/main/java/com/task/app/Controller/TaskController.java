@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/task")
 public class TaskController {
 
     private final TaskService taskService;
@@ -36,7 +37,7 @@ public class TaskController {
     }
 
 
-    @GetMapping("/tasks")
+    @GetMapping("/")
     public ResponseEntity<List<TaskResponseDto>> listTasks() {
         List<TaskResponseDto> tasks = taskService.findAll().stream()
                 .map(taskMapper::toResponseDto)
@@ -46,7 +47,7 @@ public class TaskController {
     }
 
     // 2. Get only in-progress tasks
-    @GetMapping("/tasks/in-progress")
+    @GetMapping("/in-progress")
     public ResponseEntity<List<TaskResponseDto>> listTasksInProgress() {
         List<Task> taskList = taskService.findAllComplete(false);
 
@@ -58,7 +59,7 @@ public class TaskController {
     }
 
     // 3. Create a new task
-    @PostMapping("/task/create")
+    @PostMapping("/create")
     public ResponseEntity<TaskResponseDto> createTask(@Valid @RequestBody TaskCreateDto taskCreateDto) {
         // Map DTO to Entity
         Task task = taskMapper.toEntity(taskCreateDto);
@@ -71,7 +72,7 @@ public class TaskController {
     }
 
     // 4. Get a specific task by ID (Replaces the "showFilledTaskForm" concept)
-    @GetMapping("/task/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<TaskResponseDto> getTaskById(@PathVariable Long id) {
         Task task = taskService.getTaskById(id);
         if (task == null) {
@@ -81,7 +82,7 @@ public class TaskController {
     }
 
     // 5. Update an existing task
-    @PutMapping("/task/edit/{id}")
+    @PutMapping("/edit/{id}")
     public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id, @Valid @RequestBody TaskUpdateDto taskUpdateDto) {
         Task existingTask = taskService.getTaskById(id);
         if (existingTask == null) {
@@ -96,7 +97,7 @@ public class TaskController {
     }
 
     // 6. Delete a task
-    @DeleteMapping("/task/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTask(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal currentUser) {
@@ -108,14 +109,14 @@ public class TaskController {
     }
 
     // 7. Mark task as done
-    @PutMapping("/task/mark-done/{id}")
+    @PutMapping("/mark-done/{id}")
     public ResponseEntity<Void> setTaskCompleted(@PathVariable Long id) {
         taskService.setTaskCompleted(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 8. Unmark task
-    @PutMapping("/task/unmark-done/{id}")
+    @PutMapping("/unmark-done/{id}")
     public ResponseEntity<Void> setTaskNotCompleted(@PathVariable Long id) {
         taskService.setTaskNotCompleted(id);
         return new ResponseEntity<>(HttpStatus.OK);

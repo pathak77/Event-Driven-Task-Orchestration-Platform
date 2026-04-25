@@ -29,14 +29,13 @@ public class GatewayContextFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String userId = request.getHeader("userId");
-        String username = request.getHeader("username");
-
+        String userId = request.getHeader("X-userId");
+        String username = request.getHeader("X-username");
 
         if(userId != null && username != null) {
 
             UserDto userDto = new UserDto(Long.parseLong(userId), username);
-            userService.createUser(userDto);
+            userService.syncUserFromGateway(userDto);
 
 
             UserPrincipal principal = new UserPrincipal(userId, username);

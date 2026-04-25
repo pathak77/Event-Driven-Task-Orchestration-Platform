@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -53,21 +53,17 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void syncUserFromGateway(UserDto userDto) {
-        if (userRepository.existsById(userDto.getUserId())) {
-            return;
-        }
-
-        User user = User.builder()
-                .userId(userDto.getUserId())
-                .username(userDto.getUsername())
-                .build();
 
         try {
-            userRepository.save(user);
+            System.out.println("user received with " + userDto.getUserId() + " with user name " + userDto.getUsername());
+            userRepository.upsertUser(userDto.getUserId(), userDto.getUsername());
+
         } catch (DataIntegrityViolationException e) {
 
         }
     }
+
+
 
 
     @Override

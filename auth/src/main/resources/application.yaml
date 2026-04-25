@@ -2,7 +2,7 @@ spring:
   application:
     name: auth
 
-#
+
 #  datasource:
 #    url: jdbc:postgresql://localhost:5050/db
 #    username: 'root'

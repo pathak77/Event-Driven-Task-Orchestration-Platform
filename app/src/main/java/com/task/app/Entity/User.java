@@ -22,13 +22,12 @@ public class User {
     private Long userId;
 
     @Email
-    @NotEmpty
     @Column(unique = true)
     private String email;
 
+    @NotEmpty
     private String username;
 
-    private String password;
 
     private String phoneNumber;
 
