@@ -2,20 +2,40 @@ spring:
   application:
     name: auth
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: true
 
-#  datasource:
-#    url: jdbc:postgresql://localhost:5050/db
-#    username: 'root'
-#    password: '0000'
-#    driver-class-name: org.postgresql.Driver
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-#
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-#    show-sql: true
+    consumer:
+      group-id: auth-service-group
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+    template:
+      default-topic: auth_event
+
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5050/db
+    username: 'root'
+    password: '0000'
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
 
 security:
   jwt:
@@ -25,3 +45,4 @@ security:
 
 server:
   port: 5000
+
