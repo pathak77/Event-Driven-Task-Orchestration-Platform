@@ -1,4 +1,4 @@
-package com.prod.auth.Kafka;
+package com.task.app.Kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

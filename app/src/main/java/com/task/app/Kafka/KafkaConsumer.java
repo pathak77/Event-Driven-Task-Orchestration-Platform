@@ -1,21 +1,15 @@
 package com.task.app.Kafka;
 
 
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class kafkaConsumer {
+public class KafkaConsumer {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-
-    public kafkaConsumer(KafkaTemplate<String, Object> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
-
-
-    public void sendMessage(UserEvent event) {
-        kafkaTemplate.send("auth_api", event);
+    @KafkaListener(topics = "auth_event", groupId = "task-service-group")
+    public void listen(UserEvent user) {
+        System.out.println("Received: " + user.getUsername());
     }
 
 }

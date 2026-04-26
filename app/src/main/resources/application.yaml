@@ -1,6 +1,17 @@
 spring:
-  application:
-    name: app
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: task-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.json.value.default.type: "com.task.app.Kafka.UserEvent"
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: "*"
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+
 
   datasource:
     url: jdbc:postgresql://localhost:5432/task_store
@@ -15,3 +26,5 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+
+
