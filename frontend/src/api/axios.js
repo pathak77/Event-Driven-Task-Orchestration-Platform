@@ -1,18 +1,15 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'http://localhost/',
 });
-
 
 api.interceptors.request.use(
   (config) => {
-    const userId = localStorage.getItem('userId');
-    const username = localStorage.getItem('username');
-
-    if (userId && username) {
-      config.headers['userId'] = userId;
-      config.headers['username'] = username;
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },

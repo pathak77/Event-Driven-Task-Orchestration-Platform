@@ -22,8 +22,8 @@ public class TaskMapper {
                 .title(task.getName())
                 .description(task.getDescription())
                 .status(task.isCompleted() ? Status.COMPLETED : Status.IN_PROGRESS)
-                .startDate(null)
-                .endDate(task.getDate())
+                .startDate(task.getDate())
+                .endDate(null)
                 .build();
     }
 
@@ -31,15 +31,10 @@ public class TaskMapper {
     public Task toEntity(TaskCreateDto dto) {
         if (dto == null) return null;
 
-
-        LocalDate endDate = dto.getEndDate() != null
-                ? LocalDate.from(dto.getEndDate().atZone(ZoneId.systemDefault()).toInstant())
-                : null;
-
         return Task.builder()
                 .name(dto.getTitle())
                 .description(dto.getDescription())
-                .date(endDate)
+                .date(dto.getStartDate())
                 .isCompleted(false)
                 .build();
     }

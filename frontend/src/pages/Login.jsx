@@ -4,22 +4,35 @@ import { useNavigate, Link } from 'react-router-dom';
 import { NeuInput } from '../components/NeuInput';
 import { NeuButton } from '../components/NeuButton';
 import { NeuCard } from '../components/NeuCard';
+import api from '../api/axios';
 
 export function Login() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ usesrname: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     if(formData.username && formData.password) {
-        localStorage.setItem('username', formData.username);
-        localStorage.setItem('password', formData.password);
-        navigate('/');
+      try {
+        const response = await api.post('/auth/login', formData);
+        const { token, loginId } = response.data;
+        if (token) {
+          localStorage.setItem('token', token);
+          localStorage.setItem('userId', loginId);
+          localStorage.setItem('username', formData.username);
+          navigate('/');
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to login. Please try again.');
+        console.error('Login error', err);
+      }
     }
   };
 
@@ -38,7 +51,7 @@ export function Login() {
               <CheckSquare className="w-10 h-10" style={{ color: '#4A90E2' }} />
             </div>
             <h1 className="text-2xl font-semibold tracking-wide" style={{ color: '#1F2937' }}>
-              TaskApp
+              BuzOp
             </h1>
           </div>
 
@@ -47,6 +60,11 @@ export function Login() {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-lg">
+                {error}
+              </div>
+            )}
             <NeuInput
               icon={<Mail className="w-5 h-5" />}
               type="text"

@@ -7,6 +7,8 @@ local key = os.getenv("JWT_SECRET")
 
 function _M.check()
 	
+	ngx.log(key);
+
 	local auth_header = ngx.var.http_Authorization
 	if not auth_header then
 		return nil, "Missing Auth Header"

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/task")
+@RequestMapping("/api/task")
 public class TaskController {
 
     private final TaskService taskService;

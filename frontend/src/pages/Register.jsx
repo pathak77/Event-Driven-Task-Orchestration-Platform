@@ -4,23 +4,34 @@ import { useNavigate, Link } from 'react-router-dom';
 import { NeuInput } from '../components/NeuInput';
 import { NeuButton } from '../components/NeuButton';
 import { NeuCard } from '../components/NeuCard';
+import api from '../api/axios';
 
 export function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     if(formData.username && formData.email && formData.password) {
-        // Mock registration logic
-        localStorage.setItem('userId', Math.floor(Math.random() * 1000).toString());
-        localStorage.setItem('username', formData.username);
-        navigate('/');
+      try {
+        await api.post('/auth/register', formData);
+        setSuccess('Registration successful. You can now login.');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to register. Please try again.');
+        console.error('Registration error', err);
+      }
     }
   };
 
@@ -39,7 +50,7 @@ export function Register() {
               <UserPlus className="w-10 h-10" style={{ color: '#4A90E2' }} />
             </div>
             <h1 className="text-2xl font-semibold tracking-wide" style={{ color: '#1F2937' }}>
-              TaskApp
+              BuzOp
             </h1>
           </div>
 
@@ -48,6 +59,16 @@ export function Register() {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-lg">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="p-3 text-sm text-green-600 bg-green-50 rounded-lg">
+                {success}
+              </div>
+            )}
             <NeuInput
               icon={<User className="w-5 h-5" />}
               type="text"

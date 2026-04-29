@@ -16,7 +16,7 @@ export function Dashboard() {
 
   const fetchTasks = async () => {
     try {
-      const response = await api.get('/tasks');
+      const response = await api.get('/api/task/');
       setTasks(response.data || []);
     } catch (error) {
       console.error('Failed to fetch tasks', error);
@@ -24,7 +24,7 @@ export function Dashboard() {
   };
 
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(t => t.completed).length;
+  const completedTasks = tasks.filter(t => t.status === 'COMPLETED').length;
   const inProgressTasks = totalTasks - completedTasks;
 
   const chartData = {

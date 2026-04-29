@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, Edit2, LogOut } from 'lucide-react';
+import { User, Mail, Edit2, LogOut, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { NeuCard } from '../components/NeuCard';
 import { NeuButton } from '../components/NeuButton';
@@ -9,13 +9,17 @@ import api from '../api/axios';
 export function Profile() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({ username: '', avatarUrl: '' });
+  const [assignments, setAssignments] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ username: '', avatarUrl: '' });
 
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    if (userId) fetchProfile();
+    if (userId) {
+      fetchProfile();
+      fetchAssignments();
+    }
   }, [userId]);
 
   const fetchProfile = async () => {
@@ -29,9 +33,19 @@ export function Profile() {
     }
   };
 
+  const fetchAssignments = async () => {
+    try {
+      const response = await api.get('/api/assignments/me');
+      setAssignments(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch assignments', error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
@@ -81,6 +95,25 @@ export function Profile() {
                   <p className="font-medium" style={{ color: '#1F2937' }}>{profile.username}</p>
                 </div>
               </div>
+            </NeuCard>
+
+            <NeuCard padding="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <ClipboardList className="w-5 h-5" style={{ color: '#4A90E2' }} />
+                <h3 className="font-bold" style={{ color: '#1F2937' }}>My Assignments</h3>
+              </div>
+              {assignments.length > 0 ? (
+                <ul className="space-y-3">
+                  {assignments.map(task => (
+                    <li key={task.id} className="p-3 bg-gray-50 rounded-lg border border-gray-100 flex flex-col">
+                      <span className="font-semibold text-gray-800">{task.title}</span>
+                      <span className="text-xs text-gray-500 mt-1">Status: {task.status}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-500">No assignments found.</p>
+              )}
             </NeuCard>
             
             <div className="pt-4 space-y-4">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, Circle, CheckSquare } from 'lucide-react';
 import { NeuCard } from '../components/NeuCard';
 import { NeuButton } from '../components/NeuButton';
 import { NeuInput } from '../components/NeuInput';
@@ -8,7 +8,7 @@ import api from '../api/axios';
 export function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [newTask, setNewTask] = useState({ name: '', description: '', date: '' });
+  const [newTask, setNewTask] = useState({ title: '', description: '', startDate: '' });
 
   useEffect(() => {
     fetchTasks();
@@ -16,7 +16,7 @@ export function Tasks() {
 
   const fetchTasks = async () => {
     try {
-      const response = await api.get('/tasks');
+      const response = await api.get('/api/task/');
       setTasks(response.data || []);
     } catch (error) {
       console.error('Failed to fetch tasks', error);
@@ -26,9 +26,9 @@ export function Tasks() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/task/create', newTask);
+      await api.post('/api/task/create', newTask);
       setShowModal(false);
-      setNewTask({ name: '', description: '', date: '' });
+      setNewTask({ title: '', description: '', startDate: '' });
       fetchTasks();
     } catch (error) {
       console.error('Failed to create task', error);
@@ -37,10 +37,10 @@ export function Tasks() {
 
   const toggleTask = async (task) => {
     try {
-      if (task.completed) {
-        await api.put(`/task/unmark-done/${task.id}`);
+      if (task.status === 'COMPLETED') {
+        await api.put(`/api/task/unmark-done/${task.id}`);
       } else {
-        await api.put(`/task/mark-done/${task.id}`);
+        await api.put(`/api/task/mark-done/${task.id}`);
       }
       fetchTasks();
     } catch (error) {
@@ -51,7 +51,7 @@ export function Tasks() {
   const deleteTask = async (id) => {
     if (confirm('Delete this task?')) {
       try {
-        await api.delete(`/task/delete/${id}`);
+        await api.delete(`/api/task/delete/${id}`);
         fetchTasks();
       } catch (error) {
         console.error('Failed to delete task', error);
@@ -71,31 +71,34 @@ export function Tasks() {
       </div>
 
       <div className="space-y-4">
-        {tasks.map(task => (
-          <NeuCard key={task.id} padding="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <button onClick={() => toggleTask(task)} className="focus:outline-none">
-                  {task.completed ? (
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                  ) : (
-                    <Circle className="w-6 h-6 text-gray-400" />
-                  )}
-                </button>
-                <div>
-                  <h3 className={`font-semibold ${task.completed ? 'line-through text-gray-400' : 'text-[#1F2937]'}`}>
-                    {task.name}
-                  </h3>
-                  <p className="text-sm" style={{ color: '#6B7280' }}>{task.description}</p>
-                  <p className="text-xs mt-1" style={{ color: '#4A90E2' }}>Due: {task.date}</p>
+        {tasks.map(task => {
+          const isCompleted = task.status === 'COMPLETED';
+          return (
+            <NeuCard key={task.id} padding="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button onClick={() => toggleTask(task)} className="focus:outline-none">
+                    {isCompleted ? (
+                      <CheckCircle className="w-6 h-6 text-green-500" />
+                    ) : (
+                      <Circle className="w-6 h-6 text-gray-400" />
+                    )}
+                  </button>
+                  <div>
+                    <h3 className={`font-semibold ${isCompleted ? 'line-through text-gray-400' : 'text-[#1F2937]'}`}>
+                      {task.title}
+                    </h3>
+                    <p className="text-sm" style={{ color: '#6B7280' }}>{task.description}</p>
+                    <p className="text-xs mt-1" style={{ color: '#4A90E2' }}>Due: {task.startDate}</p>
+                  </div>
                 </div>
+                <button onClick={() => deleteTask(task.id)} className="p-2 text-red-400 hover:text-red-600">
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
-              <button onClick={() => deleteTask(task.id)} className="p-2 text-red-400 hover:text-red-600">
-                <Trash2 className="w-5 h-5" />
-              </button>
-            </div>
-          </NeuCard>
-        ))}
+            </NeuCard>
+          );
+        })}
         {tasks.length === 0 && (
           <p className="text-center mt-10" style={{ color: '#6B7280' }}>No tasks found.</p>
         )}
@@ -109,10 +112,10 @@ export function Tasks() {
               <form onSubmit={handleCreate} className="space-y-4">
                 <NeuInput
                   icon={<CheckSquare className="w-5 h-5" />}
-                  name="name"
-                  placeholder="Task Name"
-                  value={newTask.name}
-                  onChange={(e) => setNewTask({...newTask, name: e.target.value})}
+                  name="title"
+                  placeholder="Task Title"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({...newTask, title: e.target.value})}
                 />
                 <NeuInput
                   icon={<span className="w-5 h-5 block border-b-2" />}
@@ -124,13 +127,13 @@ export function Tasks() {
                 <NeuInput
                   icon={<span className="w-5 h-5 block rounded-full border-2" />}
                   type="date"
-                  name="date"
-                  placeholder="Due Date"
-                  value={newTask.date}
-                  onChange={(e) => setNewTask({...newTask, date: e.target.value})}
+                  name="startDate"
+                  placeholder="Start Date"
+                  value={newTask.startDate}
+                  onChange={(e) => setNewTask({...newTask, startDate: e.target.value})}
                 />
                 <div className="flex gap-4 pt-4">
-                  <NeuButton variant="secondary" onClick={() => setShowModal(false)}>Cancel</NeuButton>
+                  <NeuButton type="button" variant="secondary" onClick={() => setShowModal(false)}>Cancel</NeuButton>
                   <NeuButton type="submit">Save</NeuButton>
                 </div>
               </form>
