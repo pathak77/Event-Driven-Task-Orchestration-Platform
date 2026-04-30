@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Builder
 @Data
@@ -18,6 +18,8 @@ public class TaskResponseDto {
     String title;
     String description;
     Status status;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate endDate;
 }

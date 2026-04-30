@@ -1,6 +1,7 @@
 package com.task.app.Controller;
 
 import com.task.app.Dto.Authority;
+import com.task.app.Dto.UserDto;
 import com.task.app.Entity.Role;
 import com.task.app.Entity.User;
 import com.task.app.Security.UserPrincipal;
@@ -48,6 +49,12 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully");
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<User> create(@RequestBody UserDto userDto) {
+        User user = userService.createUser(userDto);
+        return ResponseEntity.ok(user);
     }
 
     // 4. Change User Authority (Restricted to ADMIN)

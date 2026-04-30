@@ -61,10 +61,9 @@ public class TaskController {
     // 3. Create a new task
     @PostMapping("/create")
     public ResponseEntity<TaskResponseDto> createTask(@Valid @RequestBody TaskCreateDto taskCreateDto) {
-        // Map DTO to Entity
+        System.out.println(taskCreateDto.toString());
         Task task = taskMapper.toEntity(taskCreateDto);
 
-        // Save using Service
         taskService.createTask(task);
 
         // Return mapped Response DTO
@@ -82,8 +81,10 @@ public class TaskController {
     }
 
     // 5. Update an existing task
-    @PutMapping("/edit/{id}")
-    public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id, @Valid @RequestBody TaskUpdateDto taskUpdateDto) {
+    @PutMapping("/edit")
+    public ResponseEntity<TaskResponseDto> updateTask( @Valid @RequestBody TaskUpdateDto taskUpdateDto) {
+        Long id = taskUpdateDto.getId();
+
         Task existingTask = taskService.getTaskById(id);
         if (existingTask == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

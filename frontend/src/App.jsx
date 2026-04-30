@@ -13,7 +13,7 @@ function PrivateRoute({ children }) {
 
 export function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/app">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -7,4 +7,9 @@ public record UserPrincipal(String id, String name) implements Principal {
     public String getName() {
         return name;
     }
+
+
+    public String getUserId(){
+        return id;
+    }
 }

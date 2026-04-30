@@ -8,12 +8,12 @@ if ngx.req.get_method() == "OPTIONS" then
     ngx.exit(ngx.HTTP_OK)
 end
 
-if err then
-	ngx.status = 401
-    ngx.header.content_type = "application/json"
-    ngx.say('{"status": "error", "message": "Unauthorized: ' .. (err or "Invalid token") .. '"}')
-    return ngx.exit(401)
-end
+-- if err then
+-- 	ngx.status = 401
+--     ngx.header.content_type = "application/json"
+--     ngx.say('{"status": "error", "message": "Unauthorized: ' .. (err or "Invalid token") .. '"}')
+--     return ngx.exit(401)
+-- end
 
 local userId = payload.sub
 
@@ -29,4 +29,3 @@ if not allowed then
 end
 
 ngx.log(ngx.INFO, "Request allowed for user: ", userId)
- 

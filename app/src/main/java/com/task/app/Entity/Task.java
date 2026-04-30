@@ -33,15 +33,16 @@ public class Task {
     @NotEmpty(message = "Task name cannot be empty")
     private String name;
 
-    @NotEmpty(message = "Task description cannot be empty")
     @Column(length = 1200)
     @Size(max = 1200, message = "1000")
     private String description;
 
 
-    @NotNull(message = "Date cant be null")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
+    private LocalDate startDate ;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     private boolean isCompleted;
 

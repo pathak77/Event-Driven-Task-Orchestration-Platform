@@ -10,19 +10,22 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskCreateDto {
-    @NotBlank
+    @NotBlank(message = "title: should now be blank")
     String title;
 
     String description;
 
     @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate startDate;
 
-    LocalDateTime endDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate endDate;
 }

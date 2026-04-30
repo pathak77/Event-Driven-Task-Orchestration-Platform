@@ -1,18 +1,18 @@
-package com.task.app.Kafka;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class UserEvent {
-
-    private String username;
-    private String userId;
-}
+//package com.task.app.Kafka;
+//
+//import lombok.AllArgsConstructor;
+//import lombok.Builder;
+//import lombok.NoArgsConstructor;
+//import lombok.Getter;
+//import lombok.Setter;
+//
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@Builder
+//public class UserEvent {
+//
+//    private String username;
+//    private String userId;
+//}

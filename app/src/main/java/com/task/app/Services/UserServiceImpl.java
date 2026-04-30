@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User createUser(UserDto userDto) {
         User user = User.builder()
                 .userId(userDto.getUserId())
@@ -47,7 +48,9 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("User already exists");
         }
 
-        return userRepository.save(user);
+        userRepository.upsertUser(userDto.getUserId(), userDto.getUsername());
+
+        return (user);
     }
 
     @Override

@@ -8,9 +8,12 @@ import com.task.app.Mapper.TaskMapper;
 import com.task.app.Repository.TaskRepo;
 import com.task.app.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,18 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void createTask(Task task) {
+        Object principal = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+
+        String currentUsername;
+
+        if (principal instanceof UserDetails) {
+            currentUsername = ((UserDetails) principal).getUsername();
+            task.setCreatorName(currentUsername);
+        } else {
+            currentUsername = principal.toString();
+        }
+        
+
         taskRepository.save(task);
     }
 
@@ -45,7 +60,8 @@ public class TaskServiceImpl implements TaskService {
 
         task.setName(updatedTask.getName());
         task.setDescription(updatedTask.getDescription());
-        task.setDate(updatedTask.getDate());
+        task.setStartDate(updatedTask.getStartDate());
+        task.setEndDate(updatedTask.getEndDate() == null ? null : updatedTask.getEndDate());
         taskRepository.save(task);
     }
 
@@ -74,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> findByOwnerOrderByDateDesc(User user) {
-        return taskRepository.findByOwnerOrderByDateDesc(user);
+        return taskRepository.findByOwnerOrderByStartDateDesc(user);
     }
 
     @Override

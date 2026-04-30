@@ -72,7 +72,7 @@ function _M.is_allowed(user_id)
         return false
 	end 
 	   
-    local res, err = red:eval(BUCKET_LOGIC, 1, user_id, 1, ngx.now(), 10, 10, 60)
+    local res, err = red:eval(BUCKET_LOGIC, 1, user_id, 1, ngx.now(), 40, 40, 60)
 
     local ok, pool_err = red:set_keepalive(10000, 100) 
 

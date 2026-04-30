@@ -1,8 +1,8 @@
 package com.task.app.Dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.task.app.Entity.User;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,19 +21,22 @@ import java.util.List;
 @NoArgsConstructor
 public class TaskUpdateDto {
 
-    @NotBlank
+    @NotNull
+            @Min(1)
     Long id;
 
     @NotEmpty(message = "Task name cannot be empty")
-    private String name;
+    private String title;
 
     @NotEmpty(message = "Task description cannot be empty")
     private String description;
 
     @NotNull(message = "Date cant be null")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
     
     @NotNull(message = "Date cant be null")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     private Status status;

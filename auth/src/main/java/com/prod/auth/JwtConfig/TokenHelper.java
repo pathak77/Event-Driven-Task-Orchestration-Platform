@@ -32,7 +32,9 @@ public class TokenHelper {
         this.jwtExpiration = jwtExpiration;
     }
     public String generateToken(UserDetail userDetail) {
-        return generateToken(new HashMap<>(), userDetail);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("user_id", userDetail.getUserId());
+        return generateToken(extraClaims, userDetail);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetail userDetail) {

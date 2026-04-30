@@ -24,8 +24,7 @@ public class AssignmentDto {
     String Description;
 
     @NotNull
-    @Builder.Default()
-    LocalDate startDate = LocalDate.now();
+    LocalDate startDate;
 
     LocalDate endDate;
 

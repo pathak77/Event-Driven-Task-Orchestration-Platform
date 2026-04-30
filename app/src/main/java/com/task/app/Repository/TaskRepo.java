@@ -10,9 +10,10 @@ import java.util.Optional;
 
 @Repository
 public interface TaskRepo extends JpaRepository<Task, Long> {
-    List<Task> findByOwnerOrderByDateDesc(User user);
 
     List<Task> findByIsCompleted(boolean completed);
 
     List<Task> findByAssignedUsers(Long userId);;
+
+    List<Task> findByOwnerOrderByStartDateDesc(User user);
 }

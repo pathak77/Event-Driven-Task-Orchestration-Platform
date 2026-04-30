@@ -22,8 +22,8 @@ public class TaskMapper {
                 .title(task.getName())
                 .description(task.getDescription())
                 .status(task.isCompleted() ? Status.COMPLETED : Status.IN_PROGRESS)
-                .startDate(task.getDate())
-                .endDate(null)
+                .startDate(task.getStartDate())
+                .endDate(task.getEndDate() == null ? null : task.getEndDate())
                 .build();
     }
 
@@ -34,7 +34,8 @@ public class TaskMapper {
         return Task.builder()
                 .name(dto.getTitle())
                 .description(dto.getDescription())
-                .date(dto.getStartDate())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
                 .isCompleted(false)
                 .build();
     }
@@ -42,9 +43,9 @@ public class TaskMapper {
     public void updateEntityFromDto(TaskUpdateDto dto, Task task) {
         if (dto == null || task == null) return;
 
-        task.setName(dto.getName());
+        task.setName(dto.getTitle());
         task.setDescription(dto.getDescription());
-        task.setDate(dto.getEndDate());
+        task.setEndDate(dto.getEndDate());
         task.setCreatorName(dto.getCreatorName());
 
         if (dto.getStatus() != null) {
