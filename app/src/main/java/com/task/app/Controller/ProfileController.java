@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/profile")
 public class ProfileController {
@@ -60,23 +60,12 @@ public class ProfileController {
     }
 
 
-    @PutMapping({"/{id}", "/"})
+    @PutMapping({"/{id}"})
     public ResponseEntity<ProfileResponseDto> updateProfile(
             @PathVariable(required = false) Long id,
-            @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody ProfileUpdateDto updateDto) {
 
-        Long currentUserId;
-
-        if (id != null) {
-            currentUserId = id;
-        } else if (principal != null) {
-            currentUserId = Long.valueOf(principal.id());
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        User updatedUser = userService.updateProfile(currentUserId, updateDto);
+        User updatedUser = userService.updateProfile(id, updateDto);
 
 
         ProfileResponseDto response = new ProfileResponseDto();

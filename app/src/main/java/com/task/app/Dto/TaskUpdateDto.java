@@ -43,5 +43,5 @@ public class TaskUpdateDto {
 
     private String creatorName;
 
-    private List<User> assignedTo;
+    private List<UserDto> assignedTo;
 }

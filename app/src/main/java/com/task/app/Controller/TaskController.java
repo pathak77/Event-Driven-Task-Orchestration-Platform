@@ -10,6 +10,7 @@ import com.task.app.Services.TaskService;
 import com.task.app.Services.TaskServiceImpl;
 import com.task.app.Services.UserService;
 import com.task.app.Services.UserServiceImpl;
+import com.task.app.Entity.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,17 +23,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/task")
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserService userService;
     private final TaskMapper taskMapper;
 
     @Autowired
-    public TaskController(TaskServiceImpl taskService, TaskMapper taskMapper) {
+    public TaskController(TaskServiceImpl taskService, UserServiceImpl userService, TaskMapper taskMapper) {
         this.taskService = taskService;
+        this.userService = userService;
         this.taskMapper = taskMapper;
     }
 
@@ -60,9 +63,19 @@ public class TaskController {
 
     // 3. Create a new task
     @PostMapping("/create")
-    public ResponseEntity<TaskResponseDto> createTask(@Valid @RequestBody TaskCreateDto taskCreateDto) {
+    public ResponseEntity<TaskResponseDto> createTask(
+            @Valid @RequestBody TaskCreateDto taskCreateDto,
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+        
         System.out.println(taskCreateDto.toString());
+       
         Task task = taskMapper.toEntity(taskCreateDto);
+
+        if (currentUser != null) {
+            Long userId = Long.parseLong(currentUser.id());
+            User owner = userService.getUserById(userId);
+            task.setOwner(owner);
+        }
 
         taskService.createTask(task);
 

@@ -2,7 +2,7 @@
 
 services:
   backend:
-    image: buzop-app-image
+    image: buzop-backend
     container_name: BuzOp
     environment:
       HTTP_PORT: "8080"

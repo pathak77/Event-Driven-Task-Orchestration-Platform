@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProfileUpdateDto{
 
+    String username;
+
     String bio;
 
     String avatarUrl;
@@ -19,5 +21,5 @@ public class ProfileUpdateDto{
     String phoneNumber;
 
     @Email
-            String email;
+    String email;
 }

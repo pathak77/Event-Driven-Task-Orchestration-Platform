@@ -23,7 +23,11 @@ export function Register() {
     setSuccess('');
     if(formData.username && formData.email && formData.password) {
       try {
-        await api.post('/auth/register', formData);
+        await api.post('/api/users/create', {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password
+        });
         setSuccess('Registration successful. You can now login.');
         setTimeout(() => {
           navigate('/login');

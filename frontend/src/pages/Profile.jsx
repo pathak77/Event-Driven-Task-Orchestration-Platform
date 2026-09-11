@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User, Mail, Edit2, LogOut, ClipboardList, Phone, Info } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { NeuCard } from '../components/NeuCard';
 import { NeuButton } from '../components/NeuButton';
 import { NeuInput } from '../components/NeuInput';
@@ -13,14 +13,17 @@ export function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ username: '', avatarUrl: '', bio: '', phoneNumber: '', email: '' });
 
-  const userId = localStorage.getItem('userId');
+  const { id: urlUserId } = useParams();
+  const loggedInUserId = localStorage.getItem('userId');
+  const userId = urlUserId || loggedInUserId;
+  const isOwnProfile = !urlUserId || urlUserId === loggedInUserId;
 
   useEffect(() => {
     if (userId) {
       fetchProfile();
       fetchAssignments();
     }
-  }, [userId]);
+  }, [userId, loggedInUserId]);
 
   const fetchProfile = async () => {
     try {
@@ -51,12 +54,16 @@ export function Profile() {
 
   const handleSave = async () => {
     try {
-      await api.put(`/api/profile/${userId}`, editForm);
-      localStorage.setItem('username', editForm.username);
-      setProfile({ ...editForm });
+      const response = await api.put(`/api/profile/${userId}`, editForm);
+      // The response should contain the updated profile from the backend
+      const updatedProfile = response.data;
+      
+      localStorage.setItem('username', updatedProfile.username);
+      setProfile({ ...updatedProfile });
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to save profile', error);
+      alert(error.response?.data?.message || 'Failed to save profile');
     }
   };
 
@@ -186,26 +193,30 @@ export function Profile() {
             </NeuCard>
             
             <div className="pt-4 space-y-4">
-              <NeuButton
-                variant="secondary"
-                icon={<Edit2 className="w-5 h-5" />}
-                onClick={() => { setEditForm({ ...profile }); setIsEditing(true); }}
-              >
-                Edit Profile
-              </NeuButton>
+                {isOwnProfile && (
+                  <NeuButton
+                    variant="secondary"
+                    icon={<Edit2 className="w-5 h-5" />}
+                    onClick={() => { setEditForm({ ...profile }); setIsEditing(true); }}
+                  >
+                    Edit Profile
+                  </NeuButton>
+                )}
 
-              <button
-                onClick={handleLogout}
-                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-semibold"
-                style={{
-                  background: '#E8F0FE',
-                  boxShadow: '6px 6px 12px #D1E1F9, -6px -6px 12px #ffffff',
-                  color: '#2D74DA',
-                }}
-              >
-                <LogOut className="w-5 h-5" />
-                <span>Log Out</span>
-              </button>
+                {isOwnProfile && (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-semibold"
+                    style={{
+                      background: '#E8F0FE',
+                      boxShadow: '6px 6px 12px #D1E1F9, -6px -6px 12px #ffffff',
+                      color: '#2D74DA',
+                    }}
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Log Out</span>
+                  </button>
+                )}
             </div>
           </>
         ) : (

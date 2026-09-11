@@ -16,24 +16,22 @@ export function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    if(formData.username && formData.password) {
-      try {
-        const response = await api.post('/auth/login', formData);
-        const { token, loginId } = response.data;
-        if (token) {
-          localStorage.setItem('token', token);
-          localStorage.setItem('userId', loginId);
-          localStorage.setItem('username', formData.username);
-          navigate('/');
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to login. Please try again.');
-        console.error('Login error', err);
-      }
-    }
+    
+    // Mock login: Accept any credentials
+    // Generate a deterministic numeric ID from the username
+    const username = formData.username || 'User';
+    const mockUserId = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0).toString();
+    const mockToken = 'mock-jwt-token-' + Math.random().toString(36).substr(2);
+    
+    localStorage.setItem('token', mockToken);
+    localStorage.setItem('userId', mockUserId);
+    localStorage.setItem('username', username);
+    
+    console.log(`Mock login successful for ${username} (ID: ${mockUserId})`);
+    navigate('/');
   };
 
   return (

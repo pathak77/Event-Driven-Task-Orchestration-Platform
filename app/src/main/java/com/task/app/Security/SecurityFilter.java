@@ -17,8 +17,7 @@ public class SecurityFilter {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/*", "/login").permitAll()
-
-                       // .anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 )
 
                 .logout(logout -> logout

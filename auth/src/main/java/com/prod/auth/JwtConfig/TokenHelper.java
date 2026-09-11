@@ -86,18 +86,21 @@ public class TokenHelper {
 
     private String buildToken(
             Map<String, Object> extraClaims,
-            UserDetail UserDetail,
+            UserDetail userDetail,
             Date expiration
     ) {
-        return Jwts
-                .builder()
-                .claims(extraClaims)
-                .subject(UserDetail.getUsername())
+
+       return Jwts
+            .builder()
+            .claims() 
+                .add(extraClaims) 
+                .subject(userDetail.getUsername())
                 .issuer(appName)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(expiration)
-                .signWith(getSignInKey())
-                .compact();
+            .and() 
+            .signWith(getSignInKey())
+           .compact();
     }
 
 

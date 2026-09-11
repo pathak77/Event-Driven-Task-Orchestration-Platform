@@ -70,21 +70,37 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User updateProfile(Long id,  ProfileUpdateDto updateDto) {
+    public User updateProfile(Long id, ProfileUpdateDto updateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Optional<User> existingUser = userRepository.findByEmailOrPhoneNumber( (updateDto.getEmail().isBlank()) ? null : updateDto.getEmail(),
-                (updateDto.getPhoneNumber().isEmpty()) ? null : updateDto.getPhoneNumber() );
+        String email = (updateDto.getEmail() != null && !updateDto.getEmail().isBlank()) ? updateDto.getEmail() : null;
+        String phone = (updateDto.getPhoneNumber() != null && !updateDto.getPhoneNumber().isEmpty()) ? updateDto.getPhoneNumber() : null;
 
-        if(existingUser.isPresent()) {
-            if(existingUser.get().getUserId().equals(id)) {
-                user.setBio( (updateDto.getBio().isEmpty()) ? null : updateDto.getBio());
-                user.setPhoto( (updateDto.getAvatarUrl().isEmpty()) ? null : updateDto.getAvatarUrl());
-                user.setPhoneNumber( (updateDto.getPhoneNumber().isEmpty()) ? null : updateDto.getPhoneNumber() );
-                user.setEmail( (updateDto.getEmail().isBlank()) ? null : updateDto.getEmail() );
-            }
-            else throw new BadRequestException("User with same email or phone exists");
+        Optional<User> existingUser = Optional.empty();
+        if (email != null || phone != null) {
+            existingUser = userRepository.findByEmailOrPhoneNumber(email, phone);
+        }
+
+        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(id)) {
+            throw new BadRequestException("User with same email or phone exists");
+        }
+
+        // Update fields if they are provided
+        if (updateDto.getUsername() != null && !updateDto.getUsername().isBlank()) {
+            user.setUsername(updateDto.getUsername());
+        }
+        if (updateDto.getBio() != null) {
+            user.setBio(updateDto.getBio());
+        }
+        if (updateDto.getAvatarUrl() != null) {
+            user.setPhoto(updateDto.getAvatarUrl());
+        }
+        if (updateDto.getPhoneNumber() != null) {
+            user.setPhoneNumber(updateDto.getPhoneNumber());
+        }
+        if (updateDto.getEmail() != null && !updateDto.getEmail().isBlank()) {
+            user.setEmail(updateDto.getEmail());
         }
 
         return userRepository.save(user);

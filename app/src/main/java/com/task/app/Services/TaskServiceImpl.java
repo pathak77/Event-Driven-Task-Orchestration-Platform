@@ -3,13 +3,13 @@ package com.task.app.Services;
 import com.task.app.Dto.TaskResponseDto;
 import com.task.app.Entity.Task;
 import com.task.app.Entity.User;
+import com.task.app.Security.UserPrincipal;
 import com.task.app.GlobalExceptions.BadRequestException;
 import com.task.app.Mapper.TaskMapper;
 import com.task.app.Repository.TaskRepo;
 import com.task.app.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,21 +33,25 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void createTask(Task task) {
-        Object principal = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+public void createTask(Task task) {
+    
+    Object principal = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
 
-        String currentUsername;
-
-        if (principal instanceof UserDetails) {
-            currentUsername = ((UserDetails) principal).getUsername();
-            task.setCreatorName(currentUsername);
-        } else {
-            currentUsername = principal.toString();
-        }
+    if (principal instanceof UserPrincipal userPrincipal) {
+       
+        Long userId = Long.parseLong(userPrincipal.getUserId());
         
-
-        taskRepository.save(task);
+       
+        User currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        task.setOwner(currentUser);
+        task.setCreatorName(currentUser.getUsername());
+    } else {
+        throw new BadRequestException("User not authenticated");
     }
+
+    taskRepository.save(task);
+}
 
     @Override
     public void updateTask(Task updatedTask) {
@@ -157,6 +161,10 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new BadRequestException("Task not found"));
 
+        if (task.getOwner() == null || !task.getOwner().getUserId().equals(requestingUserId)) {
+            throw new BadRequestException("Unauthorized: Only the owner can assign users to this task.");
+        }
+
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
@@ -169,7 +177,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponseDto> getTasksAssignedToUser(Long userId) {
 
-        List<Task> userTask = taskRepository.findByAssignedUsers(userId);
+        List<Task> userTask = taskRepository.findByAssignedUsers_UserId(userId);
 
         return userTask.stream().map(taskmapper::toResponseDto).toList();
     }

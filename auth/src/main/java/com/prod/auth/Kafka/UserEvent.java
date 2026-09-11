@@ -14,4 +14,5 @@ import lombok.Setter;
 public class UserEvent {
     private String username;
     private String userId;
+    private String eventId;
 }

@@ -24,19 +24,24 @@ public class GatewayContextFilter extends OncePerRequestFilter {
     GatewayContextFilter(UserService userService) {
         this.userService = userService;
     }
+
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+
+        try {
         String userId = request.getHeader("X-userId");
         String username = request.getHeader("X-username");
 
         if(userId != null && username != null) {
-
+            // LOG THIS: Ensure the headers actually arrived in the container
+            System.out.println("DEBUG: Filter received ID: " + userId + " Name: " + username);
+            
             UserDto userDto = new UserDto(Long.parseLong(userId), username);
             userService.syncUserFromGateway(userDto);
-
 
             UserPrincipal principal = new UserPrincipal(userId, username);
             UsernamePasswordAuthenticationToken authentication =
@@ -45,13 +50,16 @@ public class GatewayContextFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        try{
-            filterChain.doFilter(request, response);
-        }
+        filterChain.doFilter(request, response);
 
-        finally {
-            SecurityContextHolder.clearContext();
-        }
+    } catch (Exception e) {
+        // This will print the ACTUAL error to your docker logs
+        System.err.println("FILTER ERROR: " + e.getMessage());
+        e.printStackTrace(); 
+        throw e;
+    } finally {
+        SecurityContextHolder.clearContext();
+    }
     }
 
 

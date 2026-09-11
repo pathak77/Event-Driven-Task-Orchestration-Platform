@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/assignments")
+@CrossOrigin("*")
 public class AssignController {
 
         private final UserService userService;

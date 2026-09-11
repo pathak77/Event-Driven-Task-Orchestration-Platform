@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.util.List;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -22,4 +24,6 @@ public class TaskResponseDto {
     LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate endDate;
+    String creatorName;
+    List<UserDto> assignedUsers;
 }

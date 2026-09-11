@@ -99,11 +99,23 @@ export function Tasks() {
       await api.post(
         `/api/assignments/${assignModal.taskId}/assign-to/${userId}`,
       );
+      fetchTasks();
+      // Keep modal open to allow more assignments if needed, or close it?
+      // Let's close it for now as per previous behavior but with refresh.
       setAssignModal({ show: false, taskId: null });
-      alert("Task successfully assigned!");
     } catch (error) {
       console.error("Failed to assign task", error);
-      alert("Failed to assign task.");
+      alert(error.response?.data?.message || "Failed to assign task.");
+    }
+  };
+
+  const handleUnassign = async (taskId, userId) => {
+    try {
+      await api.delete(`/api/assignments/${taskId}/unassign/${userId}`);
+      fetchTasks();
+    } catch (error) {
+      console.error("Failed to unassign task", error);
+      alert(error.response?.data?.message || "Failed to unassign task.");
     }
   };
 
@@ -154,12 +166,12 @@ export function Tasks() {
                         {task.description}
                       </p>
                       <div className="flex items-center gap-3 mt-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Due: {task.startDate}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${task.endDate ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+                          {task.endDate ? `Due: ${task.endDate}` : `Started: ${task.startDate}`}
                         </span>
-                        {task.endDate && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            End: {task.endDate}
+                        {task.endDate && task.startDate && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                            From: {task.startDate}
                           </span>
                         )}
                         {isCompleted && (
@@ -168,6 +180,27 @@ export function Tasks() {
                           </span>
                         )}
                       </div>
+                      {task.assignedUsers && task.assignedUsers.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {task.assignedUsers.map((u) => (
+                            <div 
+                              key={u.userId} 
+                              className="flex items-center gap-1.5 px-2 py-1 bg-gray-100 rounded-lg text-[10px] font-medium text-gray-600 border border-gray-200 group/user"
+                            >
+                              <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-white text-[8px]">
+                                {u.username.charAt(0).toUpperCase()}
+                              </div>
+                              {u.username}
+                              <button 
+                                onClick={() => handleUnassign(task.id, u.userId)}
+                                className="hover:text-red-500 transition-colors ml-1"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex gap-3 ml-11 sm:ml-0">
@@ -304,7 +337,7 @@ export function Tasks() {
                 {users.length > 0 ? (
                   users.map((user) => (
                     <div
-                      key={user.id}
+                      key={user.userId}
                       className="flex justify-between items-center p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group"
                     >
                       <div className="flex items-center gap-4">
@@ -317,15 +350,24 @@ export function Tasks() {
                           <p className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
                             {user.username}
                           </p>
-                          <p className="text-xs text-gray-500">ID: {user.id}</p>
+                          <p className="text-xs text-gray-500">ID: {user.userId}</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => assignTask(user.id)}
-                        className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl font-medium transition-colors shadow-sm cursor-pointer"
-                      >
-                        Assign
-                      </button>
+                      {tasks.find(t => t.id === assignModal.taskId)?.assignedUsers?.some(u => u.userId === user.userId) ? (
+                        <button
+                          onClick={() => handleUnassign(assignModal.taskId, user.userId)}
+                          className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl font-medium transition-colors shadow-sm cursor-pointer"
+                        >
+                          Unassign
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => assignTask(user.userId)}
+                          className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl font-medium transition-colors shadow-sm cursor-pointer"
+                        >
+                          Assign
+                        </button>
+                      )}
                     </div>
                   ))
                 ) : (
